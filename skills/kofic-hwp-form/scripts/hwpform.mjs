@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// kofic-hwp-form CLI — 한글(HWP/HWPX) 양식 학습 → 값 입력 → 서식 보존 문서 완성 → 검수
+// kofic-hwp-form CLI: 한글(HWP/HWPX) 양식 학습 → 값 입력 → 서식 보존 문서 완성 → 검수
 import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { basename, dirname, extname, join, resolve } from 'node:path';
@@ -10,7 +10,7 @@ import { SKILL_DIR, SKILL_PKG, depsInstalled, ensureDir, libraryRoot, loadKordoc
 import { checkWeekdays, summarizeReport, verifyDocument } from './lib/verify.mjs';
 import { plainText } from './lib/apply.mjs';
 
-const HELP = `kofic-hwp-form ${SKILL_PKG.version} — 한글(HWP/HWPX) 양식 학습·문서 완성
+const HELP = `kofic-hwp-form ${SKILL_PKG.version}: 한글(HWP/HWPX) 양식 학습·문서 완성
 
 사용법: node scripts/hwpform.mjs <명령> [옵션]   (공통: --json 기계용 출력)
 
@@ -170,12 +170,12 @@ function slotHint(s) {
   if (s.kind === 'table') hints.push(`표 ${s.rows.length}행 × 칸 배열 [[…],[…]] (null=유지, 행 추가는 한글에서) · 열: ${s.headers.join(' / ')}`);
   if (s.placeholder && s.placeholder !== 'empty') hints.push(`양식 표기: ${normText(s.sample).slice(0, 40)}`);
   const byType = {
-    date: '날짜 예: 2026. 10. 15.(목) — 양식 표기가 있으면 그 형식',
+    date: '날짜 예: 2026. 10. 15.(목): 양식 표기가 있으면 그 형식',
     phone: '전화 예: 051-720-0000',
     email: '전자우편 예: name@example.go.kr',
     amount: '금액 예: 30,000,000 (필요 시 “금30,000,000원(금삼천만원)”)',
     bizno: '사업자등록번호 000-00-00000',
-    rrn: '주민등록번호 — 실습에는 가상 값 사용',
+    rrn: '주민등록번호: 실습에는 가상 값 사용',
     person: '성명(필요 시 직위 포함)',
   };
   if (byType[s.type]) hints.push(byType[s.type]);
@@ -317,7 +317,7 @@ function modeLabel(m) {
 
 function slotTable(card, max = 80) {
   const rows = [];
-  for (const f of card.fields) rows.push(`  [누름틀] ${f.name}${f.placeholder ? ` — ${f.placeholder}` : ''}`);
+  for (const f of card.fields) rows.push(`  [누름틀] ${f.name}${f.placeholder ? `: ${f.placeholder}` : ''}`);
   for (const s of card.slots.slice(0, max)) {
     const sample = s.kind === 'table' ? `${s.rows.length}행 표` : normText(Array.isArray(s.sample) ? '' : s.sample).replace(/\n/g, ' / ').slice(0, 36);
     const st = { empty: '빈칸', placeholder: '예시', filled: '채움' }[s.state] || s.state;
@@ -824,8 +824,8 @@ async function cmdLint(a) {
   if (a.munche && k.lintMuncheText) munche = k.lintMuncheText(text) || [];
   if (a.json) return outJson({ count: findings.length, findings, munche });
   if (!findings.length && !munche.length) return out('공문서 표기법: 문제 없음');
-  for (const f of findings) out(`- [${f.severity}] ${f.rule} ${f.line ? `(${f.line}행)` : ''} “${f.match ?? ''}” — ${f.message}${f.suggest ? ` → ${f.suggest}` : ''}`);
-  for (const f of munche) out(`- [문체] ${f.rule ?? ''} “${f.match ?? ''}” — ${f.message ?? ''}`);
+  for (const f of findings) out(`- [${f.severity}] ${f.rule} ${f.line ? `(${f.line}행)` : ''} “${f.match ?? ''}”: ${f.message}${f.suggest ? ` → ${f.suggest}` : ''}`);
+  for (const f of munche) out(`- [문체] ${f.rule ?? ''} “${f.match ?? ''}”: ${f.message ?? ''}`);
 }
 
 async function cmdPack(a) {
@@ -903,7 +903,7 @@ async function main() {
   if (!cmd || cmd === 'help' || a.help) return out(HELP);
   const fn = COMMANDS[cmd];
   if (!fn) throw new Error(`알 수 없는 명령: ${cmd}\n\n${HELP}`);
-  if (['show', 'values', 'fill', 'pack', 'remove'].includes(cmd) && !a._[1]) throw new Error(`사용법: ${cmd} <양식ID> — 'list'로 ID를 확인하세요.`);
+  if (['show', 'values', 'fill', 'pack', 'remove'].includes(cmd) && !a._[1]) throw new Error(`사용법: ${cmd} <양식ID>: 'list'로 ID를 확인하세요.`);
   await fn(a);
 }
 

@@ -1,4 +1,4 @@
-# AGENTS.md — kofic-form 저장소 안내 (에이전트용)
+# AGENTS.md: kofic-form 저장소 안내 (에이전트용)
 
 이 저장소는 에이전트 스킬 **kofic-hwp-form**(한글 HWP/HWPX 양식 학습·문서 완성)을 담고 있다.
 

@@ -19,16 +19,16 @@
 | 필드 | 설명 |
 | --- | --- |
 | `id`, `name`, `org` | 양식 ID(폴더 이름), 표시 이름, 기관 |
-| `docType` | `{type, label, preset, confidence, evidence}` — type: notice·official·report·plan·press·minutes·form·contract·other |
+| `docType` | `{type, label, preset, confidence, evidence}`: type: notice·official·report·plan·press·minutes·form·contract·other |
 | `mode` | `fill`(빈칸 채우기) · `reuse`(지난 문서 재활용) · `fields`(누름틀) |
 | `source` | 원본 파일명·형식(hwp/hwpx)·sha256·쪽수 |
 | `working` | HWPX 작업본 정보(`contentLoss`: rhwp 변환 손실 보고 건수) |
-| `fields[]` | 누름틀 `{name, placeholder, value}` — values에서 name을 key로 사용 |
+| `fields[]` | 누름틀 `{name, placeholder, value}`: values에서 name을 key로 사용 |
 | `slots[]` | 입력 칸(아래) |
 | `entities[]` | 재활용 시 자주 바뀌는 값 후보(날짜·시간·금액·문서번호·전화·이메일) |
 | `outline[]` | 제목 목록 |
 | `sourceCheck` | 원본 점검(날짜·요일 불일치, 표기법 지적 수) |
-| `style` | `{preset, profile}` — generate 기본 프리셋 |
+| `style` | `{preset, profile}`: generate 기본 프리셋 |
 | `notes` | 작성 요령 메모(사람이 자유롭게 기록) |
 
 ### slot 공통 필드
@@ -65,9 +65,9 @@
 
 ## 반영 방식(자동 3단계)
 
-1. **직접 반영** — 원본을 kordoc IR로 읽고 slot 주소(표·행·열)의 글자만 바꾼 뒤 `patchHwp`/`patchHwpx`로 원본 파일 안에서 바뀐 칸만 교체한다(글꼴·표·쪽 설정 보존).
-2. **HWPX 작업본 반영** — 1에서 반영되지 않은 값이 있으면(글상자·복잡 셀) rhwp로 만든 HWPX 작업본에 같은 편집을 적용한다.
-3. **라벨 기반 채우기** — 그래도 남으면(병합 구조를 표 좌표로 재현할 수 없는 표) kordoc `fillHwpx`로 “라벨 옆 칸”에 채운다. 라벨이 문서에서 유일한 칸만 대상이며, 채워진 위치가 의도한 라벨이 아니면 되돌린다.
+1. **직접 반영**: 원본을 kordoc IR로 읽고 slot 주소(표·행·열)의 글자만 바꾼 뒤 `patchHwp`/`patchHwpx`로 원본 파일 안에서 바뀐 칸만 교체한다(글꼴·표·쪽 설정 보존).
+2. **HWPX 작업본 반영**: 1에서 반영되지 않은 값이 있으면(글상자·복잡 셀) rhwp로 만든 HWPX 작업본에 같은 편집을 적용한다.
+3. **라벨 기반 채우기**: 그래도 남으면(병합 구조를 표 좌표로 재현할 수 없는 표) kordoc `fillHwpx`로 “라벨 옆 칸”에 채운다. 라벨이 문서에서 유일한 칸만 대상이며, 채워진 위치가 의도한 라벨이 아니면 되돌린다.
 4. 누락이 가장 적은 결과를 채택한다. 누름틀은 HWPX는 kordoc `fillForm(hwpx-preserve)`, HWP는 rhwp `setFieldValueByName`.
 
 출력 형식: 1단계로 끝나면 원본과 같은 형식. HWP 원본이 2·3단계를 거치면 HWPX로 저장한다(`--format hwp`로 강제하면 rhwp가 줄 배치를 재계산해 HWP로 변환).

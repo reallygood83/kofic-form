@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# kofic-hwp-form 설치 — macOS · Linux · WSL · 클라우드 에이전트 컴퓨터(Grok Bot, Muse 등)
+# kofic-hwp-form 설치: macOS · Linux · WSL · 클라우드 에이전트 컴퓨터(Grok Bot, Muse 등)
 #
 #   curl -fsSL https://raw.githubusercontent.com/reallygood83/kofic-form/main/install.sh | bash
 #
@@ -31,7 +31,7 @@ done
 command -v curl >/dev/null 2>&1 || die "curl이 필요합니다."
 command -v tar >/dev/null 2>&1 || die "tar가 필요합니다."
 
-# 1) Node.js 20 이상 (없으면 개인 폴더에 설치 — 관리자 권한 불필요)
+# 1) Node.js 20 이상 (없으면 개인 폴더에 설치: 관리자 권한 불필요)
 node_ok() { [ -n "${1:-}" ] && [ -x "$1" ] && "$1" -e 'process.exit(Number(process.versions.node.split(".")[0])>=20?0:1)' >/dev/null 2>&1; }
 NODE_BIN="$(command -v node || true)"
 if ! node_ok "$NODE_BIN"; then

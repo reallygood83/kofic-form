@@ -29,7 +29,7 @@ function agentTargets(home) {
     { agent: 'grok', label: 'Grok Build', dir: join(home, '.grok', 'skills'), when: () => existsSync(join(home, '.grok')), kind: 'link' },
     { agent: 'muse', label: 'Muse Code', dir: join(xdg, 'muse', 'skills'), when: () => existsSync(join(xdg, 'muse')), kind: 'link' },
   ];
-  // Aside: ~/.aside/u/<계정>/skills/user — 심볼릭 링크 대신 실제 복사(+의존성 설치)
+  // Aside: ~/.aside/u/<계정>/skills/user: 심볼릭 링크 대신 실제 복사(+의존성 설치)
   const asideRoot = join(home, '.aside', 'u');
   if (existsSync(asideRoot)) {
     for (const acct of readdirSync(asideRoot)) {
@@ -78,7 +78,7 @@ function linkInto(target) {
       filter: (src) => !/[\\/]node_modules([\\/]|$)/.test(src) && !/[\\/]\.git([\\/]|$)/.test(src),
     });
     const r = spawnSync(process.execPath, [join(dest, 'scripts', 'setup.mjs'), '--deps-only'], { stdio: 'inherit' });
-    return { status: r.status === 0 ? 'ok(복사+설치)' : 'ok(복사) — 의존성은 첫 실행 때 자동 설치', dest };
+    return { status: r.status === 0 ? 'ok(복사+설치)' : 'ok(복사): 의존성은 첫 실행 때 자동 설치', dest };
   }
   symlinkSync(SKILL_DIR, dest, process.platform === 'win32' ? 'junction' : 'dir');
   return { status: 'ok(링크)', dest };

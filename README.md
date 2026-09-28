@@ -1,4 +1,4 @@
-# kofic-hwp-form — 한글(HWP) 양식 학습·문서 자동 완성 스킬
+# kofic-hwp-form: 한글(HWP) 양식 학습·문서 자동 완성 스킬
 
 > 우리 기관 한글 문서를 한 번 보여 주면, 다음부터는 **기초 정보만 말해도 같은 서식의 HWP/HWPX 문서가 완성·검수**되어 나옵니다.
 > 영화진흥위원회 AX 실무 강의에서 출발했고, **한글로 일하는 모든 공무원·공공기관 종사자**를 위해 만들었습니다.
@@ -96,15 +96,15 @@ $H preview 새공고.hwp                                                    # �
 
 ## 어떻게 동작하나요
 
-- **읽기·반영·검수: [kordoc](https://github.com/chrisryugj/kordoc)** — 한국 공문서 파서. 표·병합 셀을 구조 그대로 읽고, 편집 내용을 원본 파일 안에서 바뀐 부분만 교체하는 서식 보존 패치, 공문서 생성 프리셋, 공문서 표기법 검수, 개인정보 탐지를 제공합니다.
-- **변환·누름틀: [rhwp](https://github.com/edwardkim/rhwp)** — Rust+WebAssembly HWP/HWPX 엔진(`@rhwp/core`). HWP↔HWPX 변환(내용 손실 보고 포함), HWP 누름틀 채우기, 줄 배치 재계산.
+- **읽기·반영·검수: [kordoc](https://github.com/chrisryugj/kordoc)**: 한국 공문서 파서. 표·병합 셀을 구조 그대로 읽고, 편집 내용을 원본 파일 안에서 바뀐 부분만 교체하는 서식 보존 패치, 공문서 생성 프리셋, 공문서 표기법 검수, 개인정보 탐지를 제공합니다.
+- **변환·누름틀: [rhwp](https://github.com/edwardkim/rhwp)**: Rust+WebAssembly HWP/HWPX 엔진(`@rhwp/core`). HWP↔HWPX 변환(내용 손실 보고 포함), HWP 누름틀 채우기, 줄 배치 재계산.
 - **이 스킬이 더하는 것**: 양식 학습(입력 칸·체크박스·표·섹션별 키), 문서 유형 분류, 양식함, 표 좌표 기반 정밀 채우기와 **자동 복구 3단계**(HWP 직접 → HWPX 작업본 → 라벨 기반), 지난 문서 재활용 안전장치(잔존 값·날짜-요일 검사), 다중 에이전트 설치.
 
 자세한 설계: [PRD](docs/PRD.md) · [개발 명세(SPEC)](docs/SPEC.md) · [스킬 본문](skills/kofic-hwp-form/SKILL.md)
 
 ## 강의·실습 자료
 
-[`examples/kofic-practice`](examples/kofic-practice/) — 영화진흥위원회 공개 문서로 하는 4가지 실습(입찰공고 재활용, 신청서 채우기, 기안문, 내 양식 만들기와 공유). 실습 파일은 누리집에서 내려받는 스크립트로 제공합니다(저장소에 기관 원본을 싣지 않음).
+[`examples/kofic-practice`](examples/kofic-practice/): 영화진흥위원회 공개 문서로 하는 4가지 실습(입찰공고 재활용, 신청서 채우기, 기안문, 내 양식 만들기와 공유). 실습 파일은 누리집에서 내려받는 스크립트로 제공합니다(저장소에 기관 원본을 싣지 않음).
 
 ## 주의
 
@@ -115,5 +115,5 @@ $H preview 새공고.hwp                                                    # �
 
 ## 크레딧·라이선스
 
-- kordoc — © chrisryugj, MIT · rhwp — © edwardkim, MIT · 이 저장소 — MIT © 2026 Moon-Jung Kim (reallygood83, 유튜브 「배움의 달인」)
+- kordoc: © chrisryugj, MIT · rhwp: © edwardkim, MIT · 이 저장소: MIT © 2026 Moon-Jung Kim (reallygood83, 유튜브 「배움의 달인」)
 - kordoc의 선택 모듈(OCR·수식 인식, 일부 AGPL)은 설치하지 않습니다.

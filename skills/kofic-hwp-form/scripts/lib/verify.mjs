@@ -18,7 +18,7 @@ export function checkWeekdays(text) {
     const real = WEEKDAYS[dt.getUTCDay()];
     if (real !== m[4]) {
       const hint = [y - 1, y + 1].find((yy) => WEEKDAYS[new Date(Date.UTC(yy, mo - 1, d)).getUTCDay()] === m[4]);
-      items.push({ date: m[0].replace(/\s+/g, ' '), problem: `${y}. ${mo}. ${d}.은 ${real}요일`, hint: hint ? `${hint}년이라면 ${m[4]}요일 — 연도 확인` : undefined });
+      items.push({ date: m[0].replace(/\s+/g, ' '), problem: `${y}. ${mo}. ${d}.은 ${real}요일`, hint: hint ? `${hint}년이라면 ${m[4]}요일: 연도 확인` : undefined });
     }
   }
   return items;
@@ -99,7 +99,7 @@ export async function verifyDocument(k, { outBytes, outFormat, srcBytes, card, a
   }
   report.checks.unfilled = { count: unfilled.length, items: unfilled.slice(0, 60) };
 
-  // 4) 공문서 표기법(행정업무운영편람) 검수 — 경고 수준
+  // 4) 공문서 표기법(행정업무운영편람) 검수: 경고 수준
   try {
     const findings = k.lintGongmunText(parsed.markdown, { document: ['official', 'notice', 'press'].includes(card?.docType?.type) }) || [];
     report.checks.lint = {

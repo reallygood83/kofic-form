@@ -1,4 +1,4 @@
-# SPEC — kofic-hwp-form v0.1 개발 명세
+# SPEC: kofic-hwp-form v0.1 개발 명세
 
 관련 문서: [PRD](./PRD.md) · 스킬 본문 [SKILL.md](../skills/kofic-hwp-form/SKILL.md) · 데이터 구조 [template-card.md](../skills/kofic-hwp-form/references/template-card.md)
 
@@ -238,7 +238,7 @@ kordoc `renderDocument(bytes, { format: 'svg', pages })` → `page-NN.svg` + `pr
 
 ## 10. 시험
 
-- **자체 시험** `node scripts/selftest.mjs`(임시 양식함 사용): HWPX 신청서 학습·채우기·체크박스, HWP 변환본 학습·채우기, 내장 기안문, 없는 키 거부, 날짜-요일 검사 — 15항목.
+- **자체 시험** `node scripts/selftest.mjs`(임시 양식함 사용): HWPX 신청서 학습·채우기·체크박스, HWP 변환본 학습·채우기, 내장 기안문, 없는 키 거부, 날짜-요일 검사: 15항목.
 - **실문서 회귀 세트**(`examples/kofic-practice/fetch-samples.mjs`로 내려받음): 입찰공고문(reuse, HWP 유지), 양식1(fill, 복구 ②), 양식2(fill, 복구 ③), 내장 기안문(fields).
 - **수용 기준**: 자체 시험 15/15, 회귀 세트 누락 0, HWPX 구조 검증 통과, rhwp 변환 손실 0.
 

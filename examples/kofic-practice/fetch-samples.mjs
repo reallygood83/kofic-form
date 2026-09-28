@@ -42,7 +42,7 @@ for (const s of SAMPLES) {
     ok += 1;
     process.stdout.write(`✔ ${s.name} (${Math.round(buf.length / 1024)}KB)\n`);
   } catch (e) {
-    process.stdout.write(`✘ ${s.name} — ${e.message}\n  게시물이 바뀌었을 수 있습니다. 직접 내려받기: ${s.page}\n`);
+    process.stdout.write(`✘ ${s.name}: ${e.message}\n  게시물이 바뀌었을 수 있습니다. 직접 내려받기: ${s.page}\n`);
   }
 }
 process.stdout.write(`\n${ok}/${SAMPLES.length}개 저장: ${outDir}\n`);
