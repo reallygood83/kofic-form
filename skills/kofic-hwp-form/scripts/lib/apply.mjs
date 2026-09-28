@@ -3,6 +3,35 @@
 import { cleanLabel, normText, squash, tableAnchors } from './analyze.mjs';
 
 const BOX_G = /[□■☐☑☒▢▣]/g;
+// 표준 기안문 붙임 칸 뒤에 서식이 붙이는 "1부." / "1부. 끝." (앞뒤·사이 공백 허용)
+const ATTACH_SUFFIX_RE = /\s*(?:1부\.\s*끝\.|1부\.)\s*$/;
+
+export function stripAttachmentSuffix(value) {
+  if (typeof value !== 'string') return value;
+  const next = value.replace(ATTACH_SUFFIX_RE, '');
+  return next === value ? value : next.replace(/[ \t\u00a0]+$/g, '');
+}
+
+// 원문에서 붙임 칸의 현재 값을 뺀 뒤에 "1부."가 남으면, 서식이 그 접미를 이미 붙인다.
+export function paragraphAppendsAttachmentUnit(markdown, fieldValue = '') {
+  if (!markdown) return false;
+  const line = String(markdown).split(/\r?\n/).find((l) => /^\s*붙임(\s|$)/.test(l));
+  if (!line) return false;
+  let rest = line;
+  const current = String(fieldValue || '');
+  if (current) {
+    const i = rest.indexOf(current);
+    if (i >= 0) rest = rest.slice(0, i) + rest.slice(i + current.length);
+  }
+  return /1부\./.test(rest);
+}
+
+function normalizeAttachmentFields(fieldValues) {
+  for (const key of Object.keys(fieldValues)) {
+    if (squash(key) !== '붙임' || typeof fieldValues[key] !== 'string') continue;
+    fieldValues[key] = stripAttachmentSuffix(fieldValues[key]);
+  }
+}
 
 export function resolveKeys(slots, fields, values) {
   const matches = [];
@@ -190,8 +219,9 @@ function applyText(blocks, slot, value) {
   replaceInSpans(b.spans, slot.sample, String(value));
 }
 
-export function applyValues(blocks, card, values) {
+export function applyValues(blocks, card, values, opts = {}) {
   const { matches, unknown, ambiguous, fieldValues } = resolveKeys(card.slots || [], card.fields || [], values);
+  if (opts.attachmentSuffix) normalizeAttachmentFields(fieldValues);
   const applied = [];
   const errors = [];
   const skippedSame = [];

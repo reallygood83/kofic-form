@@ -36,8 +36,8 @@ kofic-form/
 │   ├── scripts/
 │   │   ├── hwpform.mjs              CLI 진입점(명령 17개)
 │   │   ├── setup.mjs                의존성 설치 + 에이전트 연결 + 점검
-│   │   ├── selftest.mjs             자체 시험 15항목
-│   │   └── lib/{runtime,analyze,apply,verify,library}.mjs
+│   │   ├── selftest.mjs             자체 시험 17항목
+│   │   └── lib/{runtime,analyze,apply,verify,library,preview}.mjs
 │   └── references/{template-card,doc-types,gongmun-style}.md
 ├── install.sh / install.ps1         한 줄 설치(macOS·Linux·WSL / Windows)
 ├── .claude-plugin/                  Claude Code 플러그인·마켓플레이스 매니페스트
@@ -197,7 +197,7 @@ IR 편집 → blocksToMarkdown
 
 ### 6.9 미리보기
 
-kordoc `renderDocument(bytes, { format: 'svg', pages })` → `page-NN.svg` + `preview.html`(`<img>`로 SVG를 따로 불러 SVG 내부 id 충돌 방지).
+kordoc `renderDocument(bytes, { format: 'svg', pages })` → `page-NN.svg` + `preview.html`(`<img>`로 SVG를 따로 불러 SVG 내부 id 충돌 방지). 조판은 근사치다(간격·쪽 나눔은 한글과 다를 수 있음). HWPX 문단 안 `lineBreak`가 조판 캐시보다 많으면 미리보기 직전에만 줄마다 문단을 나누어 그린다(원본 파일은 바꾸지 않음). `--png`는 `google-chrome`(또는 Chromium) `--headless=new --no-sandbox --hide-scrollbars --window-size=800,1130 --screenshot`으로 쪽별 PNG를 만들고, 실행 파일이 없으면 SVG만 남기고 이유를 알린다.
 
 ## 7. CLI 명세
 
@@ -212,7 +212,7 @@ kordoc `renderDocument(bytes, { format: 'svg', pages })` → `page-NN.svg` + `pr
 | `generate` | `--md --template --preset --approval --options --profile --out --format` | 생성 파일 + 보고서 |
 | `verify <파일>` | `--template` | 검수 보고 |
 | `convert <파일>` | `--to hwp\|hwpx --out` | 변환 파일(손실 보고) |
-| `preview <파일>` | `--pages 1-3 --out-dir` | SVG + HTML |
+| `preview <파일>` | `--pages 1-3 --out-dir --png` | SVG + HTML, 선택적 PNG(근사 조판) |
 | `lint <파일>` | `--document --munche` | 표기법·문체 지적 |
 | `pack <ID>` · `unpack <zip>` | `--out` · `--id --force` | 양식 꾸러미 |
 | `remove <ID>` · `where` | | |
@@ -242,9 +242,9 @@ kordoc `renderDocument(bytes, { format: 'svg', pages })` → `page-NN.svg` + `pr
 
 ## 10. 시험
 
-- **자체 시험** `node scripts/selftest.mjs`(임시 양식함 사용): HWPX 신청서 학습·채우기·체크박스, HWP 변환본 학습·채우기, 내장 기안문, 없는 키 거부, 날짜-요일 검사: 15항목.
+- **자체 시험** `node scripts/selftest.mjs`(임시 양식함 사용): HWPX 신청서 학습·채우기·체크박스, HWP 변환본 학습·채우기, 내장 기안문, 없는 키 거부, 날짜-요일 검사, 붙임 `1부.` 중복 제거, 미리보기 줄바꿈: 17항목.
 - **실문서 회귀 세트**(`examples/kofic-practice/fetch-samples.mjs`로 내려받음): 입찰공고문(reuse, HWP 유지), 양식1(fill, 복구 ②), 양식2(fill, 복구 ③), 내장 기안문(fields).
-- **수용 기준**: 자체 시험 15/15, 회귀 세트 누락 0, HWPX 구조 검증 통과, rhwp 변환 손실 0.
+- **수용 기준**: 자체 시험 17/17, 회귀 세트 누락 0, HWPX 구조 검증 통과, rhwp 변환 손실 0.
 
 ## 11. 알려진 한계
 

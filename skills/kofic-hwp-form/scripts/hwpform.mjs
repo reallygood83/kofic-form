@@ -4,11 +4,11 @@ import { createHash } from 'node:crypto';
 import { existsSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { basename, dirname, extname, join, resolve } from 'node:path';
 import { classifyDocType, cleanLabel, detectSlots, docTypeInfo, findEntities, listDocTypes, normText, recommendMode, squash } from './lib/analyze.mjs';
-import { applyValues, replaceEverywhere } from './lib/apply.mjs';
+import { applyValues, paragraphAppendsAttachmentUnit, plainText, replaceEverywhere } from './lib/apply.mjs';
 import { CARD_SCHEMA, listCards, loadCard, outputsDir, removeTemplate, saveCard, slugify, templateDir, templatesDir, uniqueId } from './lib/library.mjs';
+import { PNG_SKIP_NOTE, PREVIEW_NOTE, findChrome, preparePreviewBytes, screenshotSvg } from './lib/preview.mjs';
 import { SKILL_DIR, SKILL_PKG, depsInstalled, ensureDir, libraryRoot, loadKordoc, loadRhwp, nodeMajor, note, out, outJson, packageVersion, timestamp } from './lib/runtime.mjs';
 import { checkWeekdays, summarizeReport, verifyDocument } from './lib/verify.mjs';
-import { plainText } from './lib/apply.mjs';
 
 const HELP = `kofic-hwp-form ${SKILL_PKG.version}: 한글(HWP/HWPX) 양식 학습·문서 완성
 
@@ -29,7 +29,8 @@ const HELP = `kofic-hwp-form ${SKILL_PKG.version}: 한글(HWP/HWPX) 양식 학�
                                        원고(마크다운)를 공문서 서식 HWPX로 새로 생성
   verify <파일> [--template ID]        완성 문서 검수(미기입·표기법·개인정보·구조)
   convert <파일> --to hwpx|hwp [--out 파일]   HWP↔HWPX 변환 (rhwp)
-  preview <파일> [--pages 1-3] [--out-dir 폴더]  쪽별 SVG + preview.html 미리보기
+  preview <파일> [--pages 1-3] [--out-dir 폴더] [--png]
+                                       쪽별 SVG + preview.html (조판은 근사치). --png는 Chrome/Chromium이 있을 때만 쪽별 PNG
   lint <파일.md|txt|hwp|hwpx>          공문서 표기법 검수
   pack <ID> [--out 파일.zip] / unpack <파일.zip> [--id 새ID]   동료와 양식 공유
   remove <ID>                          양식 삭제
@@ -550,12 +551,15 @@ async function cmdFill(a) {
   const replaced = [];
   let md;
   let res;
+  const attachField = (card.fields || []).find((f) => squash(f.name) === '붙임');
+  const attachmentSuffix = Boolean(attachField) && paragraphAppendsAttachmentUnit(parsed.markdown || '', attachField.value || '');
+  const applyOpts = { attachmentSuffix };
   if (a.editMd) {
     md = readFileSync(resolve(a.editMd), 'utf8');
-    res = applyValues(structuredClone(parsed.blocks), { ...card, slots: [] }, values);
+    res = applyValues(structuredClone(parsed.blocks), { ...card, slots: [] }, values, applyOpts);
     if (res.unknown.length) throw new Error(`--edit-md와 함께 쓸 수 있는 값은 누름틀뿐입니다. 표 칸 값은 편집본 마크다운에 직접 넣으세요: ${res.unknown.join(', ')}`);
   } else {
-    res = applyValues(blocks, card, values);
+    res = applyValues(blocks, card, values, applyOpts);
     for (const r of a.replace) {
       const [from, to] = splitReplace(r);
       replaced.push({ from, to, count: replaceEverywhere(blocks, from, to) });
@@ -596,7 +600,7 @@ async function cmdFill(a) {
         const wParsed = await k.parse(wBytes);
         if (wParsed.success) {
           const wBlocks = structuredClone(wParsed.blocks);
-          const res2 = applyValues(wBlocks, card, values);
+          const res2 = applyValues(wBlocks, card, values, applyOpts);
           const replaced2 = [];
           for (const r of a.replace) {
             const [from, to] = splitReplace(r);
@@ -785,14 +789,27 @@ function parsePages(spec) {
   return [...pages].sort((x, y) => x - y);
 }
 
+async function renderPreview(k, bytes, pages) {
+  const opts = { format: 'svg', ...(pages ? { pages } : {}) };
+  const prepared = await preparePreviewBytes(bytes);
+  if (prepared !== bytes) {
+    try {
+      return await k.renderDocument(prepared, opts);
+    } catch (e) {
+      note(`줄바꿈 보정 미리보기에 실패해 원본 조판으로 그립니다: ${e.message}`);
+    }
+  }
+  return k.renderDocument(bytes, opts);
+}
+
 async function cmdPreview(a) {
   const k = await loadKordoc();
   const file = a._[1];
-  if (!file) throw new Error('사용법: preview <파일> [--pages 1-3] [--out-dir 폴더]');
+  if (!file) throw new Error('사용법: preview <파일> [--pages 1-3] [--out-dir 폴더] [--png]');
   const abs = resolve(file);
   const bytes = readFileSync(abs);
   const pages = a.pages ? parsePages(a.pages) : undefined;
-  const r = await k.renderDocument(bytes, { format: 'svg', ...(pages ? { pages } : {}) });
+  const r = await renderPreview(k, bytes, pages);
   const outDir = ensureDir(a.outDir ? resolve(a.outDir) : join(dirname(abs), `${basename(abs).replace(/\.[^.]+$/, '')}_preview`));
   const files = [];
   (r.assets || []).forEach((as, i) => {
@@ -801,11 +818,34 @@ async function cmdPreview(a) {
     writeFileSync(f, as.svg ?? as.data);
     files.push(f);
   });
-  const html = `<!doctype html><meta charset="utf-8"><title>${basename(abs)} 미리보기</title><style>body{background:#e5e5e5;margin:0;padding:16px;font-family:sans-serif}figure{margin:0 auto 18px;max-width:900px;background:#fff;box-shadow:0 1px 4px #0003}figcaption{font-size:13px;color:#555;padding:6px 10px}img{width:100%;display:block}</style><h3>${basename(abs)}</h3>${files.map((f) => `<figure><figcaption>${basename(f)}</figcaption><img src="${basename(f)}"></figure>`).join('')}`;
+  const html = `<!doctype html><meta charset="utf-8"><title>${basename(abs)} 미리보기</title><style>body{background:#e5e5e5;margin:0;padding:16px;font-family:sans-serif}figure{margin:0 auto 18px;max-width:900px;background:#fff;box-shadow:0 1px 4px #0003}figcaption{font-size:13px;color:#555;padding:6px 10px}img{width:100%;display:block}p.note{max-width:900px;margin:0 auto 12px;color:#444;font-size:14px}</style><h3>${basename(abs)}</h3><p class="note">${PREVIEW_NOTE}</p>${files.map((f) => `<figure><figcaption>${basename(f)}</figcaption><img src="${basename(f)}"></figure>`).join('')}`;
   const htmlPath = join(outDir, 'preview.html');
   writeFileSync(htmlPath, html);
-  if (a.json) return outJson({ ok: true, dir: outDir, pages: files, html: htmlPath });
+  const png = [];
+  let pngNote = null;
+  if (a.png) {
+    const chrome = findChrome();
+    if (!chrome) pngNote = PNG_SKIP_NOTE;
+    else {
+      const failed = [];
+      for (const svg of files) {
+        const pngPath = svg.replace(/\.svg$/i, '.png');
+        try {
+          screenshotSvg(chrome, svg, pngPath);
+          png.push(pngPath);
+        } catch (e) {
+          failed.push(`${basename(svg)}: ${e.message}`);
+        }
+      }
+      if (!png.length) pngNote = `PNG를 건너뛰었습니다. Chrome 스크린샷에 실패했습니다. ${failed[0] || ''}`.trim();
+      else if (failed.length) pngNote = `일부 PNG만 만들었습니다. ${failed.join('; ')}`;
+    }
+  }
+  if (a.json) return outJson({ ok: true, dir: outDir, pages: files, html: htmlPath, approximate: true, png, pngNote });
   out(`미리보기 ${files.length}쪽: ${htmlPath}`);
+  out(PREVIEW_NOTE);
+  if (pngNote) out(pngNote);
+  else if (png.length) out(`PNG ${png.length}쪽: ${png.join(', ')}`);
 }
 
 async function cmdLint(a) {

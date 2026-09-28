@@ -16,6 +16,6 @@
 ## 개발 규칙
 
 - 코드: Node.js 20+ ESM, 외부 의존성은 kordoc·@rhwp/core·jszip만. 결과는 stdout(JSON 또는 사람용 요약), 진행 메시지는 stderr.
-- 시험: `node skills/kofic-hwp-form/scripts/selftest.mjs` (15개 항목 모두 통과해야 함).
+- 시험: `node skills/kofic-hwp-form/scripts/selftest.mjs` (17개 항목 모두 통과해야 함).
 - 기획·명세: `docs/PRD.md`, `docs/SPEC.md`. 실습 자료: `examples/kofic-practice/`.
 - 실제 기관 문서·개인정보는 저장소에 올리지 않는다(예제는 공개 문서를 실행 시 내려받는다).
