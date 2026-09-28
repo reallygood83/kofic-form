@@ -1,0 +1,24 @@
+{
+  "name": "kofic-hwp-form",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "공공기관 한글(HWP/HWPX) 양식 학습·문서 완성 스킬 — kordoc + rhwp 기반",
+  "license": "MIT",
+  "bin": {
+    "hwpform": "scripts/hwpform.mjs"
+  },
+  "scripts": {
+    "setup": "node scripts/setup.mjs",
+    "doctor": "node scripts/hwpform.mjs doctor",
+    "test": "node scripts/selftest.mjs"
+  },
+  "dependencies": {
+    "@rhwp/core": "^0.8.6",
+    "jszip": "^3.10.1",
+    "kordoc": "^4.15.7"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

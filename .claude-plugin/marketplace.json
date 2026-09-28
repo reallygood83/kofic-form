@@ -1,0 +1,24 @@
+{
+  "name": "kofic-form",
+  "owner": {
+    "name": "reallygood83",
+    "url": "https://github.com/reallygood83"
+  },
+  "metadata": {
+    "description": "공공기관 한글(HWP/HWPX) 양식 학습·문서 자동 완성 스킬",
+    "version": "0.1.0"
+  },
+  "plugins": [
+    {
+      "name": "kofic-hwp-form",
+      "source": "./",
+      "description": "기존 한글 문서를 양식으로 학습하고, 기초 정보로 같은 기관 서식의 HWP/HWPX 문서를 완성·검수합니다.",
+      "version": "0.1.0",
+      "author": { "name": "Moon-Jung Kim (reallygood83)" },
+      "homepage": "https://github.com/reallygood83/kofic-form",
+      "license": "MIT",
+      "keywords": ["hwp", "hwpx", "한글", "공문서", "공공기관"],
+      "category": "productivity"
+    }
+  ]
+}

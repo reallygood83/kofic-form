@@ -1,0 +1,7 @@
+node_modules/
+.DS_Store
+*.report.json
+*_preview/
+examples/kofic-practice/samples/
+examples/kofic-practice/out/
+*.hwpform.zip
