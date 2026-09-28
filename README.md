@@ -82,7 +82,7 @@ curl -fsSL https://raw.githubusercontent.com/reallygood83/kofic-form/main/instal
 
 ```bash
 node ~/.agents/skills/kofic-hwp-form/scripts/hwpform.mjs doctor      # 환경 점검
-node ~/.agents/skills/kofic-hwp-form/scripts/selftest.mjs             # 자체 시험 15항목
+node ~/.agents/skills/kofic-hwp-form/scripts/selftest.mjs             # 자체 시험 17항목
 ```
 
 ## 사용 예시
@@ -106,7 +106,8 @@ $H values 용역-입찰공고문 --out 값.json                                 
 $H fill 용역-입찰공고문 --values 값.json --replace "입찰 2026-10-1호=>입찰 2026-11-1호" --out 새공고.hwp
 $H builtin gian && $H fill gian --values 기안값.json --out 협조요청.hwpx   # 표준 기안문
 $H generate --md 모집공고.md --preset notice --out 모집공고.hwpx          # 새 문서 생성
-$H preview 새공고.hwp                                                    # 쪽별 미리보기
+$H preview 새공고.hwp                                                    # 쪽별 SVG 미리보기(조판은 근사치)
+$H preview 협조요청.hwpx --png                                           # Chrome/Chromium이 있으면 쪽별 PNG
 ```
 
 양식함 위치: `~/Documents/hwp-form-library` (환경변수 `HWPFORM_HOME`으로 변경). 만든 양식은 `pack <ID>`로 묶어 동료에게 주고, 동료는 `unpack`으로 등록합니다.
@@ -125,7 +126,8 @@ $H preview 새공고.hwp                                                    # �
 
 ## 주의
 
-- **최종 확인은 한글에서** 열어서 하세요. 내용 보존은 자동 검증하지만, 쪽 넘김 등 조판은 한글에서 다시 계산됩니다.
+- **최종 확인은 한글에서** 열어서 하세요. 내용 보존은 자동 검증하지만, 쪽 넘김 등 조판은 한글에서 다시 계산됩니다. `preview`의 SVG·PNG도 근사 조판입니다.
+- 표준 기안문의 `붙임` 칸에는 문서 이름만 넣습니다(예: `교육 운영계획`). 서식이 `1부. 끝.`을 붙입니다. 값에 `1부.`가 이미 있으면 채울 때 한 번만 남도록 걷어 냅니다.
 - HWP 원본에서 글상자·복잡한 표 때문에 복구 경로를 거치면 결과를 **HWPX로 저장**합니다. 한글에서 열어 [다른 이름으로 저장 → HWP] 하면 됩니다.
 - 표 **행 추가**, 그림·도장 삽입은 아직 지원하지 않습니다(한글에서 마무리).
 - 에이전트가 문서를 읽으면 그 내용은 해당 AI 모델로 전달됩니다. 실습은 가상 정보로 하고, 실제 업무 문서는 **기관의 생성형 AI 이용 지침**을 먼저 확인하세요. 스킬의 문서 처리 자체는 모두 내 컴퓨터에서 이뤄집니다.

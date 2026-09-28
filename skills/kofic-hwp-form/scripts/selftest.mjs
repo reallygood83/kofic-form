@@ -2,7 +2,7 @@
 // 자체 시험: 가상 신청서(HWPX·HWP)와 내장 기안문으로 학습→채우기→검수 전 과정을 확인한다.
 // 사용자 양식함을 건드리지 않도록 임시 폴더(HWPFORM_HOME)에서 실행한다.
 import { spawnSync } from 'node:child_process';
-import { mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -105,6 +105,48 @@ async function main() {
   check('없는 키는 파일을 만들지 않고 거부', bad.json?.ok === false && bad.code !== 0);
   const { checkWeekdays } = await import('./lib/verify.mjs');
   check('날짜-요일 불일치 탐지', checkWeekdays('마감 2025. 8. 10.(월)').length === 1);
+
+  process.stdout.write('\n[5] 기안문 붙임 접미 · 미리보기 줄바꿈\n');
+  const body = '1. 관련: 테스트입니다.\n2. 둘째 항목입니다.\n  가. 세부 항목입니다.';
+  async function filledAttach(suffix, name) {
+    const valuesPath = join(work, `gian-${name}.json`);
+    writeFileSync(valuesPath, JSON.stringify({ values: { 제목: '붙임 접미 시험', 본문: body, 붙임: `교육 운영계획${suffix}` } }));
+    const outPath = join(work, 'out', `기안-${name}.hwpx`);
+    const result = run(['fill', 'gian', '--values', valuesPath, '--out', outPath]);
+    const parsed = existsSync(outPath) ? await k.parse(readFileSync(outPath)) : { markdown: '' };
+    const line = parsed.markdown.split('\n').find((l) => l.includes('교육 운영계획')) || '';
+    const units = (line.match(/1부\./g) || []).length;
+    return { result, outPath, line, ok: Boolean(result.json?.output) && line.includes('교육 운영계획') && units === 1 && /끝\./.test(line) };
+  }
+  const bu = await filledAttach(' 1부.', 'bu');
+  const end = await filledAttach(' 1부. 끝.', 'end');
+  check('붙임에 이미 있는 1부.·1부. 끝.은 한 번만', bu.ok && end.ok, `${bu.line} || ${end.line}`);
+
+  const prevDir = join(work, 'preview');
+  const prev = run(['preview', bu.outPath, '--png', '--out-dir', prevDir]);
+  const svg = prev.json?.pages?.[0] ? readFileSync(prev.json.pages[0], 'utf8') : '';
+  const yOf = (needle) => {
+    const re = /<text([^>]*)>([^<]*)<\/text>/g;
+    let m;
+    while ((m = re.exec(svg))) {
+      if (m[2].includes(needle)) return Number(/y="([^"]+)"/.exec(m[1])?.[1]);
+    }
+    return null;
+  };
+  const y1 = yOf('관련');
+  const y2 = yOf('둘째');
+  const y3 = yOf('세부');
+  const { findChrome } = await import('./lib/preview.mjs');
+  const chrome = findChrome();
+  const pngs = prev.json?.png || [];
+  const pngOk = chrome
+    ? pngs.length >= 1 && readFileSync(pngs[0]).subarray(0, 8).toString('hex').startsWith('89504e47')
+    : pngs.length === 0 && /Chrome|Chromium|건너/.test(prev.json?.pngNote || '');
+  check(
+    '미리보기 문단 줄바꿈(서로 다른 y)과 PNG(또는 명확한 건너뜀)',
+    prev.json?.ok === true && prev.json?.approximate === true && y1 != null && y2 > y1 && y3 > y2 && pngOk,
+    `y=${y1},${y2},${y3} png=${JSON.stringify(pngs)} note=${prev.json?.pngNote || ''} err=${prev.stderr}`,
+  );
 
   process.stdout.write(`\n결과: ${pass}개 통과, ${fail}개 실패\n`);
   if (!process.argv.includes('--keep')) rmSync(work, { recursive: true, force: true });

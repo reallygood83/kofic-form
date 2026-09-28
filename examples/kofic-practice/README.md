@@ -79,7 +79,7 @@ $H builtin gian --org "영화진흥위원회"
 $H fill gian --values examples/kofic-practice/values-gian.json --out out/협조요청.hwpx
 ```
 
-기대 결과: 누름틀 15칸 채움, 본문 항목(1. 가.) 줄바꿈 유지, 표기법 문제 없음.
+기대 결과: 누름틀 15칸 채움, 본문 항목(1. 가.) 줄바꿈 유지, 표기법 문제 없음. `붙임` 값은 문서 이름만 둔다(`교육 운영계획`). 표준 기안문 서식이 뒤에 `1부. 끝.`을 붙이므로 값에 `1부.`를 넣지 않는다.
 응용: `generate --md examples/kofic-practice/draft-notice.md --preset notice`로 모집 공고를 새로 생성해 보기.
 
 ## 4. 내 양식 만들기와 공유
@@ -91,6 +91,6 @@ $H fill gian --values examples/kofic-practice/values-gian.json --out out/협조�
 
 ## 강사 메모
 
-- 실습 전 `selftest.mjs`로 교육장 PC 환경을 점검하세요(15/15).
+- 실습 전 `selftest.mjs`로 교육장 PC 환경을 점검하세요(17/17).
 - 기관 PC에서 npm·GitHub가 막혀 있으면 [릴리스](https://github.com/reallygood83/kofic-form/releases/latest)의 `kofic-hwp-form-offline.zip`(필수 도구 포함)과 실습 샘플을 USB로 옮겨 설치하세요(README “오프라인 설치” 참고).
 - 실제 업무 문서는 기관의 생성형 AI 이용 지침에 따르고, 개인정보가 있으면 `kordoc redact`로 가린 사본을 쓰세요.
