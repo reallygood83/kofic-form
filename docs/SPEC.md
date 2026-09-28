@@ -87,7 +87,11 @@ kofic-form/
 | Muse Code | `$XDG_CONFIG_HOME/muse/skills` (폴더가 있을 때) | 링크 |
 | Aside | `~/.aside/u/<계정>/skills/user` | **복사** + 의존성 설치(심볼릭 링크 탐색 불확실성 회피) |
 
-옵션: `--only claude,grok`, `--force`(재설치·교체), `--dry-run`, `--deps-only`.
+옵션: `--only claude,grok`, `--force`(재설치·교체), `--dry-run`, `--deps-only`. Aside 복사본에는 설치된 `node_modules`도 함께 복사한다(오프라인 PC 대응).
+
+### 4.5 오프라인 설치 꾸러미
+
+릴리스마다 `kofic-hwp-form-offline.zip`(스킬 폴더 + `node_modules`, `.bin` 제외)을 첨부한다. 의존성은 순수 JS·WASM(네이티브 `.node` 0개, os/cpu 제한 0개, 설치 스크립트 0개)이라 Windows·macOS·Linux 공용이다. `~/.agents/skills`에 풀고 `setup.mjs --link`를 실행하면 npm 없이 설치가 끝난다(의존성이 있으면 `installDeps`가 건너뜀). 최신 파일 주소: `https://github.com/reallygood83/kofic-form/releases/latest/download/kofic-hwp-form-offline.zip`.
 
 추가 설치 경로: Claude Code 플러그인(`/plugin marketplace add reallygood83/kofic-form` → `/plugin install kofic-hwp-form@kofic-form`), `npx skills add reallygood83/kofic-form`, `muse skills install <폴더> --scope user`. 복사형 설치는 `node_modules`가 없으므로 첫 실행 때 자동 설치된다.
 
@@ -256,5 +260,4 @@ kordoc `renderDocument(bytes, { format: 'svg', pages })` → `page-NN.svg` + `pr
 1. 표 행 추가: kordoc 행 추가 패치(HWPX) 연계, HWP는 작업본 경유.
 2. CSV 일괄 생성: `fill <ID> --batch 명단.csv --out-dir …`.
 3. 도장 날인: `kordoc seal` 연계(`(인)` 앵커).
-4. 오프라인 설치 꾸러미: `node_modules` 포함 zip + 설치 스크립트.
-5. MCP 서버 모드: `hwpform mcp`(learn/fill/verify 도구).
+4. MCP 서버 모드: `hwpform mcp`(learn/fill/verify 도구).

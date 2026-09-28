@@ -92,5 +92,5 @@ $H fill gian --values examples/kofic-practice/values-gian.json --out out/협조�
 ## 강사 메모
 
 - 실습 전 `selftest.mjs`로 교육장 PC 환경을 점검하세요(15/15).
-- 기관 PC에서 npm·GitHub가 막혀 있으면 사전에 설치한 폴더(`~/.agents/skills/kofic-hwp-form`, `node_modules` 포함)를 USB로 복사해 쓰면 됩니다.
+- 기관 PC에서 npm·GitHub가 막혀 있으면 [릴리스](https://github.com/reallygood83/kofic-form/releases/latest)의 `kofic-hwp-form-offline.zip`(필수 도구 포함)과 실습 샘플을 USB로 옮겨 설치하세요(README “오프라인 설치” 참고).
 - 실제 업무 문서는 기관의 생성형 AI 이용 지침에 따르고, 개인정보가 있으면 `kordoc redact`로 가린 사본을 쓰세요.

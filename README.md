@@ -47,6 +47,23 @@ irm https://raw.githubusercontent.com/reallygood83/kofic-form/main/install.ps1 |
 
 다른 방법: `npx skills add reallygood83/kofic-form` (스킬 CLI가 설치된 에이전트를 찾아 복사, 첫 실행 때 도구 자동 설치)
 
+### 인터넷이 막힌 기관 PC (오프라인 설치)
+
+[최신 릴리스](https://github.com/reallygood83/kofic-form/releases/latest)의 **[kofic-hwp-form-offline.zip](https://github.com/reallygood83/kofic-form/releases/latest/download/kofic-hwp-form-offline.zip)** 에는 필수 도구(kordoc·rhwp)가 들어 있어 npm·GitHub 접속 없이 설치됩니다. Windows·macOS·Linux 공용이고 Node.js 20 이상만 있으면 됩니다(Node.js도 없으면 nodejs.org의 LTS 설치 파일을 함께 옮기세요).
+
+```bash
+# macOS · Linux
+mkdir -p ~/.agents/skills && unzip kofic-hwp-form-offline.zip -d ~/.agents/skills
+node ~/.agents/skills/kofic-hwp-form/scripts/setup.mjs --link
+```
+
+```powershell
+# Windows PowerShell
+New-Item -ItemType Directory -Force "$HOME\.agents\skills" | Out-Null
+Expand-Archive kofic-hwp-form-offline.zip -DestinationPath "$HOME\.agents\skills"
+node "$HOME\.agents\skills\kofic-hwp-form\scripts\setup.mjs" --link
+```
+
 ### 클라우드 에이전트(Grok Bot · Muse)
 
 클라우드 컴퓨터에서 일하는 에이전트에게 채팅으로 이렇게 부탁하세요.

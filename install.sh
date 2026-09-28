@@ -13,8 +13,11 @@ set -euo pipefail
 REPO="${KOFIC_FORM_REPO:-reallygood83/kofic-form}"
 BRANCH="${KOFIC_FORM_BRANCH:-main}"
 SKILL="kofic-hwp-form"
-DEST="${KOFIC_FORM_DEST:-$HOME/.agents/skills/$SKILL}"
-NODE_DIR="${KOFIC_FORM_NODE_DIR:-$HOME/.local/share/kofic-hwp-form/node}"
+# 에이전트 샌드박스가 HOME을 바꿔도 실제 계정 홈에 설치(에이전트 연결 위치와 일치)
+REAL_HOME="$(eval echo "~$(id -un)" 2>/dev/null || true)"
+[ -n "$REAL_HOME" ] && [ -d "$REAL_HOME" ] || REAL_HOME="$HOME"
+DEST="${KOFIC_FORM_DEST:-$REAL_HOME/.agents/skills/$SKILL}"
+NODE_DIR="${KOFIC_FORM_NODE_DIR:-$REAL_HOME/.local/share/kofic-hwp-form/node}"
 
 say() { printf '\033[1;34m[kofic-hwp-form]\033[0m %s\n' "$*"; }
 die() { printf '\033[1;31m[kofic-hwp-form] %s\033[0m\n' "$*" >&2; exit 1; }

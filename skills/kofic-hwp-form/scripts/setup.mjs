@@ -72,13 +72,15 @@ function linkInto(target) {
   mkdirSync(target.dir, { recursive: true });
   if (exists) rmSync(dest, { recursive: true, force: true });
   if (target.kind === 'copy') {
+    // 설치된 필수 도구(node_modules)까지 함께 복사한다: 인터넷이 막힌 PC에서도 바로 동작
     cpSync(SKILL_DIR, dest, {
       recursive: true,
       dereference: true,
-      filter: (src) => !/[\\/]node_modules([\\/]|$)/.test(src) && !/[\\/]\.git([\\/]|$)/.test(src),
+      filter: (src) => !/[\\/]\.git([\\/]|$)/.test(src) && !/[\\/]node_modules[\\/]\.bin([\\/]|$)/.test(src) && !/\.DS_Store$/.test(src),
     });
+    if (existsSync(join(dest, 'node_modules', 'kordoc', 'package.json'))) return { status: 'ok(복사, 도구 포함)', dest };
     const r = spawnSync(process.execPath, [join(dest, 'scripts', 'setup.mjs'), '--deps-only'], { stdio: 'inherit' });
-    return { status: r.status === 0 ? 'ok(복사+설치)' : 'ok(복사): 의존성은 첫 실행 때 자동 설치', dest };
+    return { status: r.status === 0 ? 'ok(복사+설치)' : 'ok(복사): 도구는 첫 실행 때 자동 설치', dest };
   }
   symlinkSync(SKILL_DIR, dest, process.platform === 'win32' ? 'junction' : 'dir');
   return { status: 'ok(링크)', dest };
